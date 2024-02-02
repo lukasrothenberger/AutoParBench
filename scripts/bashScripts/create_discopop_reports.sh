@@ -27,21 +27,11 @@ cd ${THIS}
 if [ -d "${SCRIPTS}/../benchmarks/DiscoPoP" ]; then
   rm -rvf "${SCRIPTS}/../benchmarks/DiscoPoP"
 fi
-if [ -d "${SCRIPTS}/../benchmarks/DiscoPoP_simple_gpu" ]; then
-  rm -rvf "${SCRIPTS}/../benchmarks/DiscoPoP_simple_gpu"
-fi
-if [ -d "${SCRIPTS}/../benchmarks/DiscoPoP_combined_gpu" ]; then
-  rm -rvf "${SCRIPTS}/../benchmarks/DiscoPoP_combined_gpu"
-fi
 
 cp -r "${INPUT_DIR}" "${SCRIPTS}/../benchmarks/DiscoPoP"
-cp -r "${INPUT_DIR}" "${SCRIPTS}/../benchmarks/DiscoPoP_simple_gpu"
-cp -r "${INPUT_DIR}" "${SCRIPTS}/../benchmarks/DiscoPoP_combined_gpu"
 
 cd "${SCRIPTS}/../benchmarks/DiscoPoP"
 OUTPUT_DIR=$(pwd)
-OUTPUT_DIR_SIMPLE_GPU=${OUTPUT_DIR}_simple_gpu
-OUTPUT_DIR_COMBINED_GPU=${OUTPUT_DIR}_combined_gpu
 cd ${SCRIPTS}
 
 if [ -f "${THIS}/logs/discopop.log" ]; then
@@ -60,7 +50,7 @@ echo "Skipped compilation of NPB3."
 #cd "${THIS}"
 
 cd $OUTPUT_DIR
-#DATARACEBENCH_BENCHS=$(find dataracebench -name "*.c" | sort)
+DATARACEBENCH_BENCHS=$(find dataracebench -name "*.c" | sort)
 #DATARACEBENCH_BENCHSCPP=$(find dataracebench -name "*.cpp" | sort)
 RODINIA_BENCHS=$(ls rodinia_3.1/openmp)
 cd ${SCRIPTS}
@@ -71,10 +61,6 @@ cd ${SCRIPTS}
 echo "-----------------------------------------------"
 echo "---------------- DiscoPoP START ----------------"
 echo "-----------------------------------------------"
-
-DP_BUILD_DIR=~/git/discopop/build
-DP_GLLVM_DIR=~/Software/go/bin
-
 
 echo "DataRaceBench Benchmarks..."
 RETURNDIR=$(pwd)
@@ -89,23 +75,25 @@ for f in $DATARACEBENCH_BENCHS; do
   mkdir dp_temp
   cp $f dp_temp
   cd dp_temp
-  # Step 2.2 create Makefile
-  echo $'.DEFAULT_GOAL=all\n.PHONY: all\nCFLAGS=\"-c\"\nall: prog\n\nprog: prog.o\n\t$(CC) prog.o -o prog\n\nprog.o:' ${f} $'\n\t$(CC) $(CFLAGS) ' ${f} ' -o prog.o' > Makefile
-  # Step 2.3 create and execute the instrumented program to generate parallelization suggestions
-  $DP_BUILD_DIR/scripts/runDiscoPoP --gllvm $DP_GLLVM_DIR --project $(pwd) --executable-name prog --explorer-flags "--json patterns.json"  
-
-  # Step 2.6 create modified source code
-  discopop_code_generator --fmap $(pwd)/.discopop/FileMapping.txt --json $(pwd)/.discopop/patterns.json --outputdir ${OUTPUT_DIR_SIMPLE_GPU}/dataracebench --patterns=simple_gpu
-  discopop_code_generator --fmap $(pwd)/.discopop/FileMapping.txt --json $(pwd)/.discopop/patterns.json --outputdir ${OUTPUT_DIR_COMBINED_GPU}/dataracebench --patterns=combined_gpu
-  discopop_code_generator --fmap $(pwd)/.discopop/FileMapping.txt --json $(pwd)/.discopop/patterns.json --outputdir $(pwd) --patterns=do_all,reduction
-  # Step 2.7 overwrite original with modified source code
+  # Step 2.2 instrument and build
+  discopop_cc *.c 
+  ./a.out
+  # Step 2.3 pattern analysis, optimization, patch generation and patch application
+  cd .discopop
+  discopop_explorer --enable-patterns doall,reduction --log INFO
+  discopop_optimizer -p2 -o1 --log INFO
+  discopop_patch_generator -a optimizer/patterns.json --only-maximum-id-pattern
+  discopop_patch_applicator -v -a $(ls patch_generator)
+  cd ..
+  # Step 2.4 overwrite original with modified source code
   diff ../$f $f -y
   cp $f ..
-  # Step 2.8 leave and remove temporary directory
+  # Step 2.5 leave and remove temporary directory
   cd ..
   rm -r dp_temp  
 done
 
+exit 0
 
 for f in $DATARACEBENCH_BENCHSCPP; do
   f=$(basename $f)
