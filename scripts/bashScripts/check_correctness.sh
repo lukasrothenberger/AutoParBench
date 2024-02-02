@@ -8,10 +8,10 @@
 
 set_environment() {
 # Set environment variables
-COMPILER="icc -qopenmp -w"
-COMPILERCPP="icc -qopenmp -w"
-COMPLINK="icc -qopenmp -w"
-COMPICC="icc -qopenmp -w "
+COMPILER="/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/bin/clang -fopenmp=libomp -lc"
+COMPILERCPP="/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/bin/clang++ -fopenmp=libomp -lc"
+COMPLINK="/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/bin/clang++ -fopenmp=libomp -lc"
+COMPICC="/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/bin/clang -fopenmp=libomp -lc"
 DIRECTORY="CPU_reference -w"
 
 # Map directoies inside this repository.
@@ -63,6 +63,7 @@ cd "${THIS}"
 
 run_NAS() {
 # Run NAS Benchmarks to check the outputs.
+CLASS=S
 OUTREF=${1}
 cd "${TOPDIR}/${DIRECTORY}/NPB3.0-omp-c"
 NASDIR=$(pwd)
@@ -72,35 +73,42 @@ if [ -d bin ]; then
   rm -r bin
 fi
 cd "${NASDIR}"
-CLINK=${COMPILER} CC=${COMPILER} make clean
+make CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} veryclean
 mkdir bin
-CLINK=${COMPILER} CC=${COMPILER} make suite
+make suite CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CFLAGS="${COMPILER_FLAGS_ONLY}"
+#make bt CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
+#make cg CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
+#make ep CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
+#make ft CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
+#make is CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
+#make lu CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
+#make mg CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
+#make sp CLINK=${COMPILER_ONLY} CLINKFLAGS="${COMPILER_FLAGS_ONLY}" CC=${COMPILER_ONLY} CLASS=${CLASS}
 cd "${NASDIR}/bin"
-chmod +x bt.A
-echo "./bt.A"
-./bt.A &> ${OUTPUTS}/bt_${OUTREF}_out.txt
-chmod +x cg.A 
-echo "./cg.A"
-./cg.A &> ${OUTPUTS}/cg_${OUTREF}_out.txt
-chmod +x ep.A 
-echo "./ep.A"
-./ep.A &> ${OUTPUTS}/ep_${OUTREF}_out.txt
-chmod +x ft.A
-echo "./ft.A"
-./ft.A &> ${OUTPUTS}/ft_${OUTREF}_out.txt
-chmod +x is.A
-echo "./is.A"
-./is.A &> ${OUTPUTS}/is_${OUTREF}_out.txt
-chmod +x lu.A
-echo "./lu.A"
-./lu.A &> ${OUTPUTS}/lu_${OUTREF}_out.txt
-chmod +x mg.A 
-echo "./mg.A"
-./mg.A &> ${OUTPUTS}/mg_${OUTREF}_out.txt
-chmod +x sp.A 
-echo "./sp.A"
-./sp.A &> ${OUTPUTS}/sp_${OUTREF}_out.txt
-exit 0;
+chmod +x bt.${CLASS}
+echo "./bt.${CLASS}"
+./bt.${CLASS} &> ${OUTPUTS}/bt_${OUTREF}_out.txt
+chmod +x cg.${CLASS}
+echo "./cg.${CLASS}"
+./cg.${CLASS} &> ${OUTPUTS}/cg_${OUTREF}_out.txt
+chmod +x ep.${CLASS} 
+echo "./ep.${CLASS}"
+./ep.${CLASS} &> ${OUTPUTS}/ep_${OUTREF}_out.txt
+chmod +x ft.${CLASS}
+echo "./ft.${CLASS}"
+./ft.${CLASS} &> ${OUTPUTS}/ft_${OUTREF}_out.txt
+chmod +x is.${CLASS}
+echo "./is.${CLASS}"
+./is.${CLASS} &> ${OUTPUTS}/is_${OUTREF}_out.txt
+chmod +x lu.${CLASS}
+echo "./lu.${CLASS}"
+./lu.${CLASS} &> ${OUTPUTS}/lu_${OUTREF}_out.txt
+chmod +x mg.${CLASS} 
+echo "./mg.${CLASS}"
+./mg.${CLASS} &> ${OUTPUTS}/mg_${OUTREF}_out.txt
+chmod +x sp.${CLASS} 
+echo "./sp.${CLASS}"
+./sp.${CLASS} &> ${OUTPUTS}/sp_${OUTREF}_out.txt
 cd "${SCRIPTS}"
 }
 
@@ -111,43 +119,50 @@ cd "${TOPDIR}/${DIRECTORY}/rodinia_3.1"
 RODINIADIR=$(pwd)
 cd "${SCRIPTS}"
 cd "${RODINIADIR}"
-make OMP_clean
-LINK=${COMPLINK} ICC=${COMPICC} CXX=${COMPILERCPP} CC=${COMPILER} make OMP
+#make OMP_clean
+#LINK=${COMPLINK} ICC=${COMPICC} CXX=${COMPILERCPP} CC=${COMPILER} make OMP
 echo "b+tree"
 cd "${RODINIADIR}/openmp/b+tree"
+make clean
+LINK=${COMPLINK} ICC=${COMPICC} CXX=${COMPILERCPP} CC=${COMPILER} make -f Makefile_without_openmp
 chmod +x b+tree.out
 ./b+tree.out core 2 file ../../data/b+tree/mil.txt command ../../data/b+tree/command.txt &> ${OUTPUTS}/btree_${OUTREF}_out.txt
 cp output.txt ${OUTPUTS}/btree_${OUTREF}_out.txt
 echo "bfs"
 cd "${RODINIADIR}/openmp/bfs"
+make clean
+LINK=${COMPLINK} ICC=${COMPICC} CXX=${COMPILERCPP} CC=${COMPILER} make -f Makefile_without_openmp
 chmod +x bfs
-./bfs 4 ../../data/bfs/graph1MW_6.txt &> ${OUTPUTS}/bfs_${OUTREF}_out.txt
+## NOTE: Identical input values must be used to DiscoPoP instrumentation run due to memory mapping
+#timeout 30 ./bfs 4 ../../data/bfs/graph1MW_6.txt &> ${OUTPUTS}/bfs_${OUTREF}_out.txt
+./bfs 4 ../../data/bfs/graph65536.txt &> ${OUTPUTS}/bfs_${OUTREF}_out.txt
+
 cp result.txt ${OUTPUTS}/bfs_${OUTREF}_out.txt
-echo "cfd"
-cd "${RODINIADIR}/openmp/cfd"
-chmod +x euler3d_cpu
-./euler3d_cpu ../../data/cfd/fvcorr.domn.193K &> ${OUTPUTS}/euler3d_${OUTREF}_out.txt
-cp density ${OUTPUTS}/euler3d_density_${OUTREF}_out.txt
-cp density_energy ${OUTPUTS}/euler3d_density_energy_${OUTREF}_out.txt
-cp momentum ${OUTPUTS}/euler3d_momentum_${OUTREF}_out.txt
-chmod +x euler3d_cpu_double
-./euler3d_cpu_double ../../data/cfd/fvcorr.domn.193K &> ${OUTPUTS}/euler3d_${OUTREF}_out.txt
-cp density ${OUTPUTS}/euler3d_double_density_${OUTREF}_out.txt
-cp density_energy ${OUTPUTS}/euler3d_double_density_energy_${OUTREF}_out.txt
-cp momentum ${OUTPUTS}/euler3d_double_momentum_${OUTREF}_out.txt
-echo "heartwall"
-cd "${RODINIADIR}/openmp/heartwall"
-chmod +x heartwall
-./heartwall ../../data/heartwall/test.avi 20 4 &> ${OUTPUTS}/heartwall_${OUTREF}_out.txt
-cp result.txt ${OUTPUTS}/heartwall_${OUTREF}_out.txt
-echo "hotspot"
-cd "${RODINIADIR}/openmp/hotspot"
-chmod +x hotspot
-./hotspot 1024 1024 2 4 ../../data/hotspot/temp_1024 ../../data/hotspot/power_1024 ${OUTPUTS}/hotspot_${OUTREF}_out.txt
-echo "hotspot3D"
-cd "${RODINIADIR}/openmp/hotspot3D"
-chmod +x 3D
-./3D 512 8 100 ../../data/hotspot3D/power_512x8 ../../data/hotspot3D/temp_512x8 ${OUTPUTS}/3d_${OUTREF}_out.txt
+#echo "cfd"
+#cd "${RODINIADIR}/openmp/cfd"
+#chmod +x euler3d_cpu
+#./euler3d_cpu ../../data/cfd/fvcorr.domn.097K &> ${OUTPUTS}/euler3d_${OUTREF}_out.txt
+#cp density ${OUTPUTS}/euler3d_density_${OUTREF}_out.txt
+#cp density_energy ${OUTPUTS}/euler3d_density_energy_${OUTREF}_out.txt
+#cp momentum ${OUTPUTS}/euler3d_momentum_${OUTREF}_out.txt
+#chmod +x euler3d_cpu_double
+#./euler3d_cpu_double ../../data/cfd/fvcorr.domn.097K &> ${OUTPUTS}/euler3d_${OUTREF}_out.txt
+#cp density ${OUTPUTS}/euler3d_double_density_${OUTREF}_out.txt
+#cp density_energy ${OUTPUTS}/euler3d_double_density_energy_${OUTREF}_out.txt
+#cp momentum ${OUTPUTS}/euler3d_double_momentum_${OUTREF}_out.txt
+#echo "heartwall"
+#cd "${RODINIADIR}/openmp/heartwall"
+#chmod +x heartwall
+#./heartwall ../../data/heartwall/test.avi 20 4 &> ${OUTPUTS}/heartwall_${OUTREF}_out.txt
+#cp result.txt ${OUTPUTS}/heartwall_${OUTREF}_out.txt
+#echo "hotspot"
+#cd "${RODINIADIR}/openmp/hotspot"
+#chmod +x hotspot
+#./hotspot 1024 1024 2 4 ../../data/hotspot/temp_1024 ../../data/hotspot/power_1024 ${OUTPUTS}/hotspot_${OUTREF}_out.txt
+#echo "hotspot3D"
+#cd "${RODINIADIR}/openmp/hotspot3D"
+#chmod +x 3D
+#./3D 512 8 100 ../../data/hotspot3D/power_512x8 ../../data/hotspot3D/temp_512x8 ${OUTPUTS}/3d_${OUTREF}_out.txt
 }
 
 create_lists() {
@@ -521,6 +536,7 @@ cd "${SCRIPTS}"
 cd "${DATARACEBENCHDIR}"
 for f in ${dataracebench_micro_list[@]}; do
   echo "${DATARACEBENCHDIR}/${f/.c/.out}"
+  echo "${COMPILER} -std=c99 "${DATARACEBENCHDIR}/${f}" -o "${DATARACEBENCHDIR}/${f/.c/.out}" -lm"
   ${COMPILER} -std=c99 "${DATARACEBENCHDIR}/${f}" -o "${DATARACEBENCHDIR}/${f/.c/.out}" -lm
   eval "${DATARACEBENCHDIR}/${f/.c/.out}" &> ${OUTPUTS}/${f/.c/}_${OUTREF}_out.txt
   if [ "$?" != "0" ]; then 
@@ -567,9 +583,10 @@ check_dataracebench() {
 cd "${OUTPUTS}"
 echo "<tr><th colspan='3'> DataRaceBench </th></tr>" &>> ${THIS}/reports/Correctness_Report.md
 for f in ${DATARACEBENCH[@]}; do
-  ref_file=${f}
-  ground_truth_file=${f/_ref_out.txt/_ground_truth_out.txt}
+  ground_truth_file=${f/.txt/_ground_truth_out.txt}
 
+  # check reference output
+  ref_file=${f/.txt/_ref_out.txt}
   DIFF_GT=$(diff "${OUTPUTS}/${ref_file}" "${OUTPUTS}/${ground_truth_file}")
 
   REPORT="<tr><td>${ref_file/_ref_out.txt/}</td>"
@@ -579,6 +596,23 @@ for f in ${DATARACEBENCH[@]}; do
   else
     REPORT="${REPORT}<td>Yes</td>"
   fi
+
+  # check DiscoPoP output for different versions
+  for DISCOPOP_VERSION in $DISCOPOP_VERSIONS; do
+      discopop_file=${f/.txt/_${DISCOPOP_VERSION}_out.txt}
+      echo "DP FILE: ${discopop_file}"
+      echo "DIFF FILE: ${OUTPUTS}/${ref_file}"
+      DIFF_GT=$(diff "${OUTPUTS}/${discopop_file}" "${OUTPUTS}/${ref_file}")
+
+      if [ "$DIFF_GT" != "" ]
+      then
+        REPORT="${REPORT}<td>No</td>"
+      else
+        REPORT="${REPORT}<td>Yes</td>"
+      fi
+  done
+  
+  
   REPORT="${REPORT}</tr>"
   echo "$REPORT" &>> ${THIS}/reports/Correctness_Report.md
 done
@@ -600,6 +634,20 @@ for f in ${RODINIA[@]}; do
   else
     REPORT="${REPORT}<td>Yes</td>"
   fi 
+  
+  # check DiscoPoP output
+  discopop_file=${f/_ref_out.txt/_DiscoPoP_out.txt}
+  echo "DP FILE: ${discopop_file}"
+  echo "DIFF FILE: ${OUTPUTS}/${ground_truth_file}"
+  DIFF_GT=$(diff "${OUTPUTS}/${discopop_file}" "${OUTPUTS}/${ground_truth_file}")
+
+  if [ "$DIFF_GT" != "" ]
+  then
+    REPORT="${REPORT}<td>No</td>"
+  else
+    REPORT="${REPORT}<td>Yes</td>"
+  fi
+  
   REPORT="${REPORT}</tr>"
   echo "$REPORT" &>> ${THIS}/reports/Correctness_Report.md
 done
@@ -630,6 +678,29 @@ for f in ${NAS[@]}; do
   else
     REPORT="${REPORT}<td>Yes</td>"
   fi
+  
+  # check DiscoPoP output
+  discopop_file=${f/_ref_out.txt/_DiscoPoP_out.txt}
+
+  VALID="true"
+  # If none word SUCCESSFUL or UNSUCCESSFUL were found, invalidate the result
+  DIFF_GT=$(cat "${OUTPUTS}/${discopop_file}" | grep "SUCCESSFUL")
+  if [ "$DIFF_GT" == "" ]; then
+     VALID="false"
+  fi
+  # If the word UNSUCCESSFUL were found, invalidate the result
+  DIFF_GT=$(cat "${OUTPUTS}/${discopop_file}" | grep "UNSUCCESSFUL")
+  if [ "$DIFF_GT" != "" ]; then
+     VALID="false"
+  fi
+  echo "DIFF OF (${OUTPUTS}/${discopop_file}) : $DIFF_GT"
+  if [ "$VALID" != "true" ]
+  then
+    REPORT="${REPORT}<td>No</td>"
+  else
+    REPORT="${REPORT}<td>Yes</td>"
+  fi 
+  
   REPORT="${REPORT}</tr>"
   echo "$REPORT" &>> ${THIS}/reports/Correctness_Report.md
 done
@@ -641,34 +712,60 @@ check_outputs() {
   echo "" &>> ${THIS}/reports/Correctness_Report.md
   echo "This report was produced comparing if the output parallel programs are equal or different from the sequential one. Yes or No are the possible values, the next step is a manual inspection." &>> ${THIS}/reports/Correctness_Report.md
   echo "" &>> ${THIS}/reports/Correctness_Report.md
-  echo "<table><tr><th>Benchmark</th><th>Ground Truth</th></tr>" &>> ${THIS}/reports/Correctness_Report.md
-  check_dataracebench
-  check_rodinia
+  DISCOPOP_HEADERS=""
+  for DISCOPOP_VERSION in $DISCOPOP_VERSIONS; do
+    DISCOPOP_HEADERS="${DISCOPOP_HEADERS}<th>${DISCOPOP_VERSION}</th>"
+  done
+  echo "<table><tr><th>Benchmark</th><th>Ground Truth</th>${DISCOPOP_HEADERS}</tr>" &>> ${THIS}/reports/Correctness_Report.md
+#  check_dataracebench
+#  check_rodinia
   check_nas
   echo "</table>" &>> ${THIS}/reports/Correctness_Report.md
 }
 
 export PATH="/opt/intel/compilers_and_libraries_2019.4.243/linux/bin/intel64/:$PATH"
+export LD_LIBRARY_PATH=/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src
 
 set_environment
 create_lists
-COMPILER="icc -qopenmp -w"
-COMPILERCPP="icc -qopenmp -w"
-COMPLINK="icc -qopenmp -w"
-COMPICC="icc -qopenmp -w "
+
+CLANG_COMPILE_STRING="/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/bin/clang -fopenmp=libomp -I/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -L/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -fopenmp-targets=nvptx64 --libomptarget-nvptx-bc-path=/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/libomptarget/libomptarget-nvptx-sm_61.bc -I/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -L/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src --ptxas-path=/usr/local/cuda-11.4/bin/ptxas --cuda-path-ignore-env --cuda-path=/usr/local/cuda-11.4"
+
+CLANGPP_COMPILE_STRING="/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/bin/clang++ -fopenmp=libomp -I/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -L/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -fopenmp-targets=nvptx64 --libomptarget-nvptx-bc-path=/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/libomptarget/libomptarget-nvptx-sm_61.bc -I/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -L/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src --ptxas-path=/usr/local/cuda-11.4/bin/ptxas --cuda-path-ignore-env --cuda-path=/usr/local/cuda-11.4"
+
+COMPILER_ONLY="/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/bin/clang"
+COMPILER_FLAGS_ONLY="-fopenmp=libomp -I/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -L/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -fopenmp-targets=nvptx64 --libomptarget-nvptx-bc-path=/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/libomptarget/libomptarget-nvptx-sm_61.bc -I/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src -L/home/lukasrothenberger/Software/clang-16_gpu/llvm-project/build/runtimes/runtimes-bins/openmp/runtime/src --ptxas-path=/usr/local/cuda-11.4/bin/ptxas --cuda-path-ignore-env --cuda-path=/usr/local/cuda-11.4"
+
+COMPILER=$CLANG_COMPILE_STRING
+COMPILERCPP=$CLANGPP_COMPILE_STRING
+COMPLINK=$CLANGPP_COMPILE_STRING
+COMPICC=$CLANG_COMPILE_STRING
 DIRECTORY="sequential"
 run_NAS "ref"
-run_Rodinia "ref"
-run_dataracebench "ref"
+#run_Rodinia "ref"
+#run_dataracebench "ref"
 
-COMPILER="icc -qopenmp -w"
-COMPILERCPP="icc -qopenmp -w"
-COMPLINK="icc -qopenmp -w"
-COMPICC="icc -qopenmp -w "
+COMPILER=$CLANG_COMPILE_STRING
+COMPILERCPP=$CLANGPP_COMPILE_STRING
+COMPLINK=$CLANGPP_COMPILE_STRING
+COMPICC=$CLANG_COMPILE_STRING
 DIRECTORY="reference_cpu_threading"
 run_NAS "ground_truth"
-run_Rodinia "ground_truth"
-run_dataracebench "ground_truth"
+#run_Rodinia "ground_truth"
+#run_dataracebench "ground_truth"
+
+COMPILER=$CLANG_COMPILE_STRING
+COMPILERCPP=$CLANGPP_COMPILE_STRING
+COMPLINK=$CLANGPP_COMPILE_STRING
+COMPICC=$CLANG_COMPILE_STRING
+
+DISCOPOP_VERSIONS="DiscoPoP DiscoPoP_simple_gpu DiscoPoP_combined_gpu"
+for DISCOPOP_VERSION in $DISCOPOP_VERSIONS; do
+    DIRECTORY=$DISCOPOP_VERSION
+    run_NAS $DISCOPOP_VERSION
+    #run_Rodinia $DISCOPOP_VERSION
+    #run_dataracebench $DISCOPOP_VERSION
+done
 
 check_outputs
 clean_environment

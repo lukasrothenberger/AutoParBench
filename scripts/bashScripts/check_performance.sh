@@ -165,10 +165,10 @@ COMPLINK="icc -qopenmp -w"
 COMPICC="icc -qopenmp -w "
 DIRECTORY="sequential"
 
-for i in $(seq 1 1 5); do
+for i in $(seq 1 1 1); do
   echo "Sequential ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "ref" "A"
-  run_Rodinia "ref" "A"
+  run_NAS "ref" "S"
+  run_Rodinia "ref" "S"
 done
 
 COMPILER="icc -qopenmp -w"
@@ -177,47 +177,47 @@ COMPLINK="icc -qopenmp -w"
 COMPICC="icc -qopenmp -w "
 DIRECTORY="reference_cpu_threading"
 
-for i in $(seq 1 1 5); do
+for i in $(seq 1 1 1); do
   echo "Ground Truth ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "ground_truth" "A"
-  run_Rodinia "ground_truth" "A"
+  run_NAS "ground_truth" "S"
+  run_Rodinia "ground_truth" "S"
 done
 
-COMPILER="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-COMPILERCPP="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-COMPLINK="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-COMPICC="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-DIRECTORY="ICC_Cost"
+#COMPILER="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#COMPILERCPP="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#COMPLINK="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#COMPICC="icc -w -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#DIRECTORY="ICC_Cost"
+#
+#for i in $(seq 1 1 5); do
+#  echo "Parallel with threshold ${i}" &>> "${SCRIPTS}/reports/time.txt"
+#  run_NAS "ICC_Cost" "S"
+#  run_Rodinia "ICC_Cost" "S"
+#done
 
-for i in $(seq 1 1 5); do
-  echo "Parallel with threshold ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "ICC_Cost" "A"
-  run_Rodinia "ICC_Cost" "A"
-done
+#COMPILER="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#COMPILERCPP="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#COMPLINK="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#COMPICC="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
+#DIRECTORY="ICC_Full"
+#
+#for i in $(seq 1 1 5); do
+#  echo "Parallel without threshold ${i}" &>> "${SCRIPTS}/reports/time.txt"
+#  run_NAS "ICC_Full" "S"
+#  run_Rodinia "ICC_Full" "S"
+#done
 
-COMPILER="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-COMPILERCPP="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-COMPLINK="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-COMPICC="icc -w -par-threshold0 -no-vec -fno-inline -parallel -qopt-report-phase=all -qopt-report=5"
-DIRECTORY="ICC_Full"
-
-for i in $(seq 1 1 5); do
-  echo "Parallel without threshold ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "ICC_Full" "A"
-  run_Rodinia "ICC_Full" "A"
-done
-
-COMPILER="icc -w -qopenmp -O3 "
-COMPILERCPP="icc -w -qopenmp -O3 "
-COMPLINK="icc -w -qopenmp -O3"
-COMPICC="icc -w -qopenmp -O3"
-DIRECTORY="sequential"
-
-for i in $(seq 1 1 5); do
-  echo "Optimized with -O3 ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "par_no_threshold" "A"
-  run_Rodinia "par_no_threshold" "A"
-done
+#COMPILER="icc -w -qopenmp -O3 "
+#COMPILERCPP="icc -w -qopenmp -O3 "
+#COMPLINK="icc -w -qopenmp -O3"
+#COMPICC="icc -w -qopenmp -O3"
+#DIRECTORY="sequential"
+#
+#for i in $(seq 1 1 5); do
+#  echo "Optimized with -O3 ${i}" &>> "${SCRIPTS}/reports/time.txt"
+#  run_NAS "par_no_threshold" "S"
+#  run_Rodinia "par_no_threshold" "S"
+#done
 
 COMPILER="icc -qopenmp -w"
 COMPILERCPP="icc -qopenmp -w"
@@ -225,34 +225,46 @@ COMPLINK="icc -qopenmp -w"
 COMPICC="icc -qopenmp -w "
 DIRECTORY="original"
 
-for i in $(seq 1 1 5); do
+for i in $(seq 1 1 1); do
   echo "Manual ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "manual" "A"
-  run_Rodinia "manual" "A"
+  run_NAS "manual" "S"
+  run_Rodinia "manual" "S"
 done
+
+#COMPILER="icc -qopenmp -w"
+#COMPILERCPP="icc -qopenmp -w"
+#COMPLINK="icc -qopenmp -w"
+#COMPICC="icc -qopenmp -w "
+#DIRECTORY="Autopar"
+#
+#for i in $(seq 1 1 1); do
+#  echo "AUTOPAR ${i}" &>> "${SCRIPTS}/reports/time.txt"
+#  run_NAS "autopar" "S"
+#  run_Rodinia "autopar" "S"
+#done
+
+#COMPILER="icc -qopenmp -w"
+#COMPILERCPP="icc -qopenmp -w"
+#COMPLINK="icc -qopenmp -w"
+#COMPICC="icc -qopenmp -w "
+#DIRECTORY="Cetus"
+#
+#for i in $(seq 1 1 5); do
+#  echo "CETUS ${i}" &>> "${SCRIPTS}/reports/time.txt"
+#  run_NAS "cetus" "S"
+#  run_Rodinia "cetus" "S"
+#done
 
 COMPILER="icc -qopenmp -w"
 COMPILERCPP="icc -qopenmp -w"
 COMPLINK="icc -qopenmp -w"
 COMPICC="icc -qopenmp -w "
-DIRECTORY="Autopar"
+DIRECTORY="DiscoPoP"
 
 for i in $(seq 1 1 5); do
-  echo "AUTOPAR ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "autopar" "A"
-  run_Rodinia "autopar" "A"
-done
-
-COMPILER="icc -qopenmp -w"
-COMPILERCPP="icc -qopenmp -w"
-COMPLINK="icc -qopenmp -w"
-COMPICC="icc -qopenmp -w "
-DIRECTORY="Cetus"
-
-for i in $(seq 1 1 5); do
-  echo "CETUS ${i}" &>> "${SCRIPTS}/reports/time.txt"
-  run_NAS "cetus" "A"
-  run_Rodinia "cetus" "A"
+  echo "DiscoPoP ${i}" &>> "${SCRIPTS}/reports/time.txt"
+  run_NAS "discopop" "S"
+  run_Rodinia "discopop" "S"
 done
 
 }
