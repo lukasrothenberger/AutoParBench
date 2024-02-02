@@ -1,0 +1,2 @@
+AUDIT:COMPILING /usr/lib/llvm-11/bin/clang [-c DRB007-indirectaccess3-orig-yes.c -o prog.o]
+AUDIT:LINKING /usr/lib/llvm-11/bin/clang [prog.o -o prog]

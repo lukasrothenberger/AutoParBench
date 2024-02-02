@@ -1,0 +1,21 @@
+START 1:105
+1:124 BGN loop 180
+1:130 END loop
+1:119 BGN loop 1505
+1:124 END loop
+1:132 NOM  WAW 1:105|retval(0)
+1:133 NOM  RAW 1:132|retval(0)
+1:119 NOM  INIT *|i(6) RAW 1:119|i(6) WAR 1:119|i(6)
+1:105 NOM  INIT *|argc(1) INIT *|argv(2) INIT *|retval(0)
+1:131 NOM  RAW 1:107|base(3)
+1:126 NOM  INIT *|idx(7) RAW 1:124|i(6) WAR 1:128|idx(7)
+1:130 NOM  RAW 1:114|xa1(4) RAW 1:115|xa2(5) RAW 1:127|xa1(8) RAW 1:128|xa2(8)
+1:108 NOM  RAW 1:107|base(3)
+1:128 NOM  RAW 1:115|xa2(5) RAW 1:121|xa2(8) RAW 1:126|idx(7) WAR 1:128|xa2(8)
+1:127 NOM  RAW 1:114|xa1(4) RAW 1:121|xa1(8) RAW 1:126|idx(7) RAW 1:128|xa1(8) WAR 1:127|xa1(8)
+1:124 NOM  RAW 1:124|i(6) WAR 1:119|i(6) WAR 1:124|i(6)
+1:115 NOM  INIT *|xa2(5) RAW 1:114|xa1(4)
+1:114 NOM  INIT *|xa1(4) RAW 1:107|base(3)
+1:121 NOM  INIT *|base(8) RAW 1:107|base(3) RAW 1:119|i(6)
+1:107 NOM  INIT *|base(3)
+1:133 END program

@@ -1,0 +1,62 @@
+	Creating graph...
+	Added nodes...
+	Added edges...
+	Added iterations...
+	Calculated positions...
+Adding Dep:  1 / 37
+Adding Dep:  3 / 37
+Adding Dep:  3 / 37
+Adding Dep:  3 / 37
+Adding Dep:  3 / 37
+Adding Dep:  4 / 37
+Adding Dep:  4 / 37
+Adding Dep:  4 / 37
+Adding Dep:  4 / 37
+Adding Dep:  8 / 37
+Adding Dep:  10 / 37
+Adding Dep:  10 / 37
+Adding Dep:  11 / 37
+Adding Dep:  12 / 37
+Adding Dep:  13 / 37
+Adding Dep:  14 / 37
+Adding Dep:  15 / 37
+Adding Dep:  16 / 37
+Adding Dep:  17 / 37
+Adding Dep:  18 / 37
+Adding Dep:  19 / 37
+Adding Dep:  20 / 37
+Adding Dep:  21 / 37
+Adding Dep:  22 / 37
+Adding Dep:  23 / 37
+Adding Dep:  24 / 37
+Adding Dep:  25 / 37
+Adding Dep:  26 / 37
+Adding Dep:  26 / 37
+Adding Dep:  26 / 37
+Adding Dep:  26 / 37
+Adding Dep:  27 / 37
+Adding Dep:  27 / 37
+Adding Dep:  27 / 37
+Adding Dep:  27 / 37
+Adding Dep:  28 / 37
+Adding Dep:  28 / 37
+Adding Dep:  28 / 37
+Adding Dep:  28 / 37
+Adding Dep:  30 / 37
+Adding Dep:  32 / 37
+Adding Dep:  34 / 37
+Adding Dep:  35 / 37
+Adding Dep:  35 / 37
+PET CREATION FINISHED.
+Reduction:  0 / 2
+Reduction:  1 / 2
+REDUCTION DONE.
+Do-all: 0 / 2
+Do-all: 1 / 2
+DOALL DONE.
+Pipeline: 0 / 2
+Pipeline: 1 / 2
+PIPELINE DONE.
+Geo. Dec.: 0 / 1
+GEO. DEC. DONE.
+Time taken for pattern detection: 0.012705326080322266
