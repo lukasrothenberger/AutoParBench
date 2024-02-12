@@ -20,6 +20,7 @@ ANALYZE_ICC_COST=true
 ANALYZE_ICC_NOCOST=true
 ANALYZE_ICC_SIMD_NOCOST=true
 ANALYZE_CETUS=true
+ANALYZE_DISCOPOP=true
 if [ -f "${THIS}/reports/Summary-Report.md" ]; then
   rm "${THIS}/reports/Summary-Report.md"
 fi
@@ -58,14 +59,15 @@ set_environment
 create_summary_header
 
 # CPU Threading 
-create_summary_report "Autopar" "summary_Autopar.txt"
-create_summary_report "ICC Full" "summary_ICC_Full.txt"
-create_summary_report "ICC Cost" "summary_ICC_Cost.txt"
-create_summary_report "Cetus" "summary_Cetus.txt"
+#create_summary_report "Autopar" "summary_Autopar.txt"
+#create_summary_report "ICC Full" "summary_ICC_Full.txt"
+#create_summary_report "ICC Cost" "summary_ICC_Cost.txt"
+#create_summary_report "Cetus" "summary_Cetus.txt"
+create_summary_report "DiscoPoP" "summary_DiscoPoP.txt"
 
 # GPU Target
-create_summary_report "Dawncc" "summary_Dawncc.txt"
+#create_summary_report "Dawncc" "summary_Dawncc.txt"
 
 # CPU Simd
-create_summary_report "ICC Simd" "summary_ICC_Simd.txt"
+#create_summary_report "ICC Simd" "summary_ICC_Simd.txt"
 

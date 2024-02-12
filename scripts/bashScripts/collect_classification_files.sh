@@ -17,7 +17,7 @@ cd "${THIS}"
 if [ -f "${THIS}/equivalence_checker.out" ]; then
   rm ${THIS}/equivalence_checker.out
 fi
-g++-8 ${SCRIPTS}/../tools/EquivalenceChecker/equivalence_checker.h ${SCRIPTS}/../tools/EquivalenceChecker/equivalence_checker.cpp -o ${THIS}/equivalence_checker.out
+g++ ${SCRIPTS}/../tools/EquivalenceChecker/equivalence_checker.h ${SCRIPTS}/../tools/EquivalenceChecker/equivalence_checker.cpp -o ${THIS}/equivalence_checker.out
 chmod +x ${THIS}/equivalence_checker.out
 if [ -f "${THIS}/logs/checker.log" ]; then
   rm "${THIS}/logs/checker.log"
@@ -30,12 +30,14 @@ ANALYZE_ICC_NOCOST=true
 ANALYZE_ICC_SIMD_NOCOST=true
 ANALYZE_BASELINE=true
 ANALYZE_CETUS=true
+ANALYZE_DISCOPOP=true
 }
 
 # Step 2: Find and collect reference files
 link_jsons() {
 cd "${SCRIPTS}/../benchmarks/"
 BENCHMARKS=$(pwd)
+echo "BENCHMARKS: ${BENCHMARKS}"
 cd "${THIS}"
 
 #Collect jsons for all benchmarks
@@ -46,6 +48,9 @@ ICC_NOCOST_JSON=$(find "${BENCHMARKS}/ICC_Full" -name "*.json" | sort)
 ICC_SIMD_NOCOST_JSON=$(find "${BENCHMARKS}/ICC_Simd" -name "*.json" | sort)
 ICC_COST_JSON=$(find "${BENCHMARKS}/ICC_Cost" -name "*.json" | sort)
 CETUS_JSON=$(find "${BENCHMARKS}/Cetus" -name "*.json" | sort)
+DISCOPOP_JSON=$(find "${BENCHMARKS}/DiscoPoP" -name "*.json" | sort)
+echo "DISCOPOP_JSON: ${DISCOPOP_JSON}"
+
 
 #Collect jsons for dataracebench
 DATARACEBENCH_BASELINE_JSON=$(find "${BENCHMARKS}/reference_cpu_threading/dataracebench" -name "*.json" | sort)
@@ -53,6 +58,8 @@ DATARACEBENCH_AUTOPAR_JSON=$(find "${BENCHMARKS}/Autopar/dataracebench" -name "*
 DATARACEBENCH_ICC_NOCOST_JSON=$(find "${BENCHMARKS}/ICC_Full/dataracebench" -name "*.json" | sort)
 DATARACEBENCH_ICC_COST_JSON=$(find "${BENCHMARKS}/ICC_Cost/dataracebench" -name "*.json" | sort)
 DATARACEBENCH_CETUS_JSON=$(find "${BENCHMARKS}/Cetus/dataracebench" -name "*.json" | sort)
+DATARACEBENCH_DISCOPOP_JSON=$(find "${BENCHMARKS}/DiscoPoP/dataracebench" -name "*.json" | sort)
+echo "DRB_DISCOPOP_JSON: ${DATARACEBENCH_DISCOPOP_JSON}"
 
 #Collect jsons for rodinia
 RODINIA_BASELINE_JSON=$(find "${BENCHMARKS}/reference_cpu_threading/rodinia_3.1" -name "*.json" | sort)
@@ -60,6 +67,7 @@ RODINIA_AUTOPAR_JSON=$(find "${BENCHMARKS}/Autopar/rodinia_3.1" -name "*.json" |
 RODINIA_ICC_NOCOST_JSON=$(find "${BENCHMARKS}/ICC_Full/rodinia_3.1" -name "*.json" | sort)
 RODINIA_ICC_COST_JSON=$(find "${BENCHMARKS}/ICC_Cost/rodinia_3.1" -name "*.json" | sort)
 RODINIA_CETUS_JSON=$(find "${BENCHMARKS}/Cetus/rodinia_3.1" -name "*.json" | sort)
+RODINIA_DISCOPOP_JSON=$(find "${BENCHMARKS}/DiscoPoP/rodinia_3.1" -name "*.json" | sort)
 
 #Collect jsons for npb
 NPB_BASELINE_JSON=$(find "${BENCHMARKS}/reference_cpu_threading/NPB3.0-omp-c" -name "*.json" | sort)
@@ -67,6 +75,7 @@ NPB_AUTOPAR_JSON=$(find "${BENCHMARKS}/Autopar/NPB3.0-omp-c" -name "*.json" | so
 NPB_ICC_NOCOST_JSON=$(find "${BENCHMARKS}/ICC_Full/NPB3.0-omp-c" -name "*.json" | sort)
 NPB_ICC_COST_JSON=$(find "${BENCHMARKS}/ICC_Cost/NPB3.0-omp-c" -name "*.json" | sort)
 NPB_CETUS_JSON=$(find "${BENCHMARKS}/Cetus/NPB3.0-omp-c" -name "*.json" | sort)
+NPB_DISCOPOP_JSON=$(find "${BENCHMARKS}/DiscoPoP/NPB3.0-omp-c" -name "*.json" | sort)
 }
 
 # Step 3: Collect data of each json file
@@ -79,6 +88,7 @@ TOOL_JSONS=${4}
 GROUP=${5}
 
 echo "*** NAME = ${NAME}***"
+echo "ASDF: ${DATARACEBENCH_DISCOPOP_JSON[@]}"
 
 if [ -f "${THIS}/reports/report/report_${NAME}.txt" ]; then
   rm "${THIS}/reports/report/report_${NAME}.txt"
@@ -174,6 +184,7 @@ collect_data reference_cpu_threading Autopar Autopar "${AUTOPAR_JSON[@]}" "CPU"
 collect_data reference_cpu_threading ICC_Cost ICC_Cost "${ICC_COST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading ICC_Full ICC_Full "${ICC_NOCOST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading Cetus Cetus "${CETUS_JSON[@]}" "CPU"
+collect_data reference_cpu_threading DiscoPoP DiscoPoP "${DISCOPOP_JSON[@]}" "CPU"
 collect_data reference_gpu_target Dawncc Dawncc "${DAWNCC_JSON[@]}" "GPU"
 collect_data reference_cpu_simd ICC_Simd ICC_Simd "${ICC_SIMD_NOCOST_JSON[@]}" "CPU_VECTORIZATION"
 
@@ -185,6 +196,7 @@ collect_data reference_cpu_threading Autopar Autopar_DataRaceBench "${DATARACEBE
 collect_data reference_cpu_threading ICC_Cost ICC_Cost_DataRaceBench "${DATARACEBENCH_ICC_COST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading ICC_Full ICC_Full_DataRaceBench "${DATARACEBENCH_ICC_NOCOST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading Cetus Cetus_DataRaceBench "${DATARACEBENCH_CETUS_JSON[@]}" "CPU"
+collect_data reference_cpu_threading DiscoPoP DiscoPoP_DataRaceBench "${DATARACEBENCH_DISCOPOP_JSON[@]}" "CPU"
 
 ANALYZE_DAWNCC=false
 ANALYZE_ICC_SIMD_NOCOST=false
@@ -193,6 +205,7 @@ collect_data reference_cpu_threading Autopar Autopar_Rodinia  "${RODINIA_AUTOPAR
 collect_data reference_cpu_threading ICC_Cost ICC_Cost_Rodinia "${RODINIA_ICC_COST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading ICC_Full ICC_Full_Rodinia "${RODINIA_ICC_NOCOST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading Cetus Cetus_Rodinia "${RODINIA_CETUS_JSON[@]}" "CPU"
+collect_data reference_cpu_threading DiscoPoP DiscoPoP_Rodinia "${RODINIA_DISCOPOP_JSON[@]}" "CPU"
 
 ANALYZE_DAWNCC=false
 ANALYZE_ICC_SIMD_NOCOST=false
@@ -201,6 +214,7 @@ collect_data reference_cpu_threading Autopar Autopar_NPB "${NPB_AUTOPAR_JSON[@]}
 collect_data reference_cpu_threading ICC_Cost ICC_Cost_NPB "${NPB_ICC_COST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading ICC_Full ICC_Full_NPB "${NPB_ICC_NOCOST_JSON[@]}" "CPU"
 collect_data reference_cpu_threading Cetus Cetus_NPB "${NPB_CETUS_JSON[@]}" "CPU"
+collect_data reference_cpu_threading DiscoPoP DiscoPoP_NPB "${NPB_DISCOPOP_JSON[@]}" "CPU"
 
 clean_environment
 exit 0;

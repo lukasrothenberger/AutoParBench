@@ -38,7 +38,7 @@ remove_jsons() {
   BENCHS_JSON=$(find ${1} -name "*.json" | sort)
   for f in $BENCHS_JSON; do
     echo "Removing $f"
-    rm "$f"
+    rm -f "$f"
   done
   cd "${THIS}"
 }
@@ -111,6 +111,7 @@ update_jsons ${1} ${2}
 analyze_directory original
 analyze_directory reference_cpu_threading
 analyze_directory Cetus
+analyze_directory DiscoPoP
 analyze_directory reference_gpu_target
 analyze_directory Dawncc
 analyze_directory reference_cpu_simd

@@ -43,6 +43,7 @@ echo "* Autopar : Links to Autopar's output, JSON file and the classification of
 echo "* ICC Full : Links to ICC Full 's output, JSON file and the classification of this loop after equivalence checking." &>> "${file}"
 echo "* ICC Cost : Links to ICC Cost's output, JSON file and the classification of this loop after equivalence checking." &>> "${file}"
 echo "* Cetus : Links to Cetus's output, JSON file and the classification of this loop after equivalence checking." &>> "${file}"
+echo "* DiscoPoP : Links to Cetus's output, JSON file and the classification of this loop after equivalence checking." &>> "${file}"
 echo "" &>> "${file}"
 }
 
@@ -201,13 +202,14 @@ create_detailed_report() {
   read_file "${THIS}/reports/detailed/detailed_report_ICC_Full_DataRaceBench.txt" "ICC_Full"
   read_file "${THIS}/reports/detailed/detailed_report_ICC_Cost_DataRaceBench.txt" "ICC_Cost"
   read_file "${THIS}/reports/detailed/detailed_report_Cetus_DataRaceBench.txt" "Cetus"
+  read_file "${THIS}/reports/detailed/detailed_report_DiscoPoP_DataRaceBench.txt" "Cetus"
 
   BENCHMARK="CPU_Dataracebench"
   create_detailed_header "${BENCHMARK}"
   add_description ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "### DataRaceBench Report" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
-  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | Autopar | ICC Full | ICC Cost | Cetus " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
+  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | Autopar | ICC Full | ICC Cost | Cetus | DiscoPoP " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo " --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
 
   print_map "${BENCHMARK}" 
@@ -219,13 +221,14 @@ create_detailed_report() {
   read_file "${THIS}/reports/detailed/detailed_report_ICC_Full_NPB.txt" "ICC_Full"
   read_file "${THIS}/reports/detailed/detailed_report_ICC_Cost_NPB.txt" "ICC_Cost"
   read_file "${THIS}/reports/detailed/detailed_report_Cetus_NPB.txt" "Cetus"
+  read_file "${THIS}/reports/detailed/detailed_report_DiscoPoP_NPB.txt" "DiscoPoP"
 
   BENCHMARK="CPU_NPB"
   create_detailed_header "${BENCHMARK}"
   add_description ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "### NPB Report" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
-  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | Autopar | ICC Full | ICC Cost | Cetus " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
+  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | Autopar | ICC Full | ICC Cost | Cetus | DiscoPoP " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo " --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
 
   print_map "${BENCHMARK}" 
@@ -237,13 +240,14 @@ create_detailed_report() {
   read_file "${THIS}/reports/detailed/detailed_report_ICC_Full_Rodinia.txt" "ICC_Full"
   read_file "${THIS}/reports/detailed/detailed_report_ICC_Cost_Rodinia.txt" "ICC_Cost"
   read_file "${THIS}/reports/detailed/detailed_report_Cetus_Rodinia.txt" "Cetus"
+  read_file "${THIS}/reports/detailed/detailed_report_DiscoPoP_Rodinia.txt" "DiscoPoP"
 
   BENCHMARK="CPU_Rodinia"
   create_detailed_header "${BENCHMARK}"
   add_description ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "### Rodinia Report" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
-  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | Autopar | ICC Full | ICC Cost | Cetus " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
+  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | Autopar | ICC Full | ICC Cost | Cetus | DiscoPoP " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo " --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
 
   print_map "${BENCHMARK}"
@@ -252,13 +256,14 @@ create_detailed_report() {
   declare -A map=()
   add_common_info "${THIS}/reports/detailed/detailed_report_Dawncc.txt" "reference_gpu_target"
   read_file "${THIS}/reports/detailed/detailed_report_Dawncc.txt" "Dawncc"
+  read_file "${THIS}/reports/detailed/detailed_report_DiscoPoP.txt" "DiscoPoP"
 
   BENCHMARK="GPU_Target"
   create_detailed_header "${BENCHMARK}"
   add_description ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "### DataRaceBench Report" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo "" &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
-  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | DawnCC " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
+  echo " ID | Filename | Loop ID | Line Number | Ground Truth | JSON Reference | Original | Sequential | DawnCC | DiscoPoP " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
   echo " --- | --- | --- | --- | --- | --- | --- | --- | ---  " &>> ${THIS}/reports/Detailed-Report-${BENCHMARK}.md
 
   print_map "${BENCHMARK}"

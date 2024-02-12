@@ -28,7 +28,7 @@ if [ -d "${SCRIPTS}/../benchmarks/DiscoPoP" ]; then
   rm -rvf "${SCRIPTS}/../benchmarks/DiscoPoP"
 fi
 
-cp -r "${INPUT_DIR}" "${SCRIPTS}/../benchmarks/DiscoPoP"
+cp -rvf "${INPUT_DIR}" "${SCRIPTS}/../benchmarks/DiscoPoP"
 
 cd "${SCRIPTS}/../benchmarks/DiscoPoP"
 OUTPUT_DIR=$(pwd)
@@ -67,7 +67,8 @@ RETURNDIR=$(pwd)
 cd ${SCRIPTS}/../benchmarks/DiscoPoP/dataracebench
 echo "PWD: $(pwd)"
 
-for f in $DATARACEBENCH_BENCHS; do
+# for f in $DATARACEBENCH_BENCHS; do
+for f in DRB003-antidep2-orig-yes.c DRB018-plusplus-orig-yes.c DRB045-doall1-orig-no.c ; do
   f=$(basename $f)
   echo ""
   echo "  ###  $f ###"
@@ -93,36 +94,11 @@ for f in $DATARACEBENCH_BENCHS; do
   rm -r dp_temp  
 done
 
-exit 0
-
-for f in $DATARACEBENCH_BENCHSCPP; do
-  f=$(basename $f)
-  echo ""
-  echo "  ###  $f ###"
-  # Step 2.1 create and enter temporary directory for Benchmark
-  mkdir dp_temp
-  cp $f dp_temp
-  cd dp_temp
-  # Step 2.2 create Makefile
-  echo $'.DEFAULT_GOAL=all\n.PHONY: all\nCFLAGS=\"-c\"\nall: prog\n\nprog: prog.o\n\t$(CXX) prog.o -o prog\n\nprog.o:' ${f} $'\n\t$(CXX) $(CFLAGS) ' ${f} ' -o prog.o' > Makefile
-  # Step 2.3 create and execute the instrumented program to generate parallelization suggestions
-  $DP_BUILD_DIR/scripts/runDiscoPoP --gllvm $DP_GLLVM_DIR --project $(pwd) --executable-name prog --explorer-flags "--json patterns.json"  
-
-  # Step 2.6 create modified source code
-  discopop_code_generator --fmap $(pwd)/.discopop/FileMapping.txt --json $(pwd)/.discopop/patterns.json --outputdir ${OUTPUT_DIR_SIMPLE_GPU}/dataracebench --patterns=simple_gpu
-  discopop_code_generator --fmap $(pwd)/.discopop/FileMapping.txt --json $(pwd)/.discopop/patterns.json --outputdir ${OUTPUT_DIR_COMBINED_GPU}/dataracebench --patterns=combined_gpu
-  discopop_code_generator --fmap $(pwd)/.discopop/FileMapping.txt --json $(pwd)/.discopop/patterns.json --outputdir $(pwd) --patterns=do_all,reduction
-  # Step 2.7 overwrite original with modified source code
-  diff ../$f $f -y
-  cp $f ..
-  # Step 2.8 leave and remove temporary directory
-  cd ..
-  rm -r dp_temp  
-done
-
 cd $RETURNDIR
 echo "DataRaceBench Benchmarks done."
 
+cd ${THIS}
+exit 0
 
 echo "Starting Rodinia benchmarks..."
 cd ${SCRIPTS}/../benchmarks/DiscoPoP/rodinia_3.1/openmp
